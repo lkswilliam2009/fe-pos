@@ -33,7 +33,7 @@ Axios
 
 CSS custom (tanpa UI library)
 
-📦 Instalasi & Menjalankan Project
+## 📦 Instalasi & Menjalankan Project
 ```bash
   git clone https://github.com/lkswilliam2009/fe-pos.git
 ```
@@ -51,8 +51,9 @@ http://localhost:5173
 Default Outlet
 
 Secara default aplikasi menggunakan CRUDCRUD:
-
-https://crudcrud.com/api/{API_KEY}/discounts
+```bash
+  https://crudcrud.com/api/{API_KEY}/discounts
+```
 
 
 ## ⚠️ Catatan Penting tentang CRUDCRUD
@@ -129,15 +130,19 @@ Tombol disabled saat loading
 Tidak ada alert native browser
 
 ## 🚀 Build Production
+```bash
 npm run build
+```
 
 
 Output akan berada di folder:
 
 dist/
 
-dapat diakses di https://fe-diskon.netlify.app/
-
+dapat diakses di 
+```bash
+https://fe-diskon.netlify.app/
+```
 ## 📌 Catatan Reviewer
 
 Project ini fokus pada frontend
