@@ -129,6 +129,8 @@ Output akan berada di folder:
 
 dist/
 
+dapat diakses di https://zippy-dasik-02eacf.netlify.app/
+
 📌 Catatan Reviewer
 
 Project ini fokus pada frontend
