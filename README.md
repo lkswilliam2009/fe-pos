@@ -1,7 +1,7 @@
 Aplikasi Manajemen Diskon berbasis Vue 3 (Composition API) yang memungkinkan pengguna untuk menambah, melihat, mengubah, dan menghapus diskon.
 Dibuat mengikuti desain Figma utama dengan fokus pada UX, state handling, dan clean code.
 
-✨ Fitur Utama
+## ✨ Fitur Utama
 
 ✅ CRUD Diskon (Create, Read, Update, Delete)
 
@@ -23,7 +23,7 @@ Dibuat mengikuti desain Figma utama dengan fokus pada UX, state handling, dan cl
 
 ✅ Responsive & build-ready
 
-🛠️ Teknologi
+## 🛠️ Teknologi
 
 Vue 3 (Composition API)
 
@@ -34,15 +34,20 @@ Axios
 CSS custom (tanpa UI library)
 
 📦 Instalasi & Menjalankan Project
+```bash
+  git clone https://github.com/lkswilliam2009/fe-pos.git
+```
+```bash
 npm install
+npm run build
 npm run dev
-
+```
 
 Aplikasi akan berjalan di:
 
 http://localhost:5173
 
-🔌 Konfigurasi API
+## 🔌 Konfigurasi API
 Default Outlet
 
 Secara default aplikasi menggunakan CRUDCRUD:
@@ -50,7 +55,7 @@ Secara default aplikasi menggunakan CRUDCRUD:
 https://crudcrud.com/api/{API_KEY}/discounts
 
 
-⚠️ Catatan Penting tentang CRUDCRUD
+## ⚠️ Catatan Penting tentang CRUDCRUD
 
 Batas ±100 request per API key
 
@@ -60,7 +65,7 @@ PUT sering diblok preflight
 
 Cocok hanya untuk demo frontend
 
-✏️ Mekanisme Update Data (Penting)
+## ✏️ Mekanisme Update Data (Penting)
 
 Karena keterbatasan CORS CRUDCRUD:
 
@@ -76,7 +81,7 @@ POST data baru
 
 Pendekatan ini aman untuk demo frontend dan umum digunakan pada test UI.
 
-🧠 Alur Aplikasi
+## 🧠 Alur Aplikasi
 
 Pilih outlet (default: Kopi Anak Bangsa)
 
@@ -92,7 +97,7 @@ Toast muncul untuk setiap aksi
 
 Empty state ditampilkan jika data kosong
 
-🧪 Error Handling
+## 🧪 Error Handling
 
 Network / CORS error → pesan ramah ke user
 
@@ -102,14 +107,16 @@ Request ganda dicegah dengan loading state
 
 ERR_NETWORK ditangani dengan fallback message
 
-📁 Struktur Singkat
+## 📁 Struktur Singkat
+```bash
 src/
 ├─ App.vue
 ├─ assets/
 ├─ styles.css
 └─ main.js
+```
 
-🎨 UI & UX Notes
+## 🎨 UI & UX Notes
 
 UI mengikuti Figma utama
 
@@ -121,7 +128,7 @@ Tombol disabled saat loading
 
 Tidak ada alert native browser
 
-🚀 Build Production
+## 🚀 Build Production
 npm run build
 
 
@@ -131,7 +138,7 @@ dist/
 
 dapat diakses di https://fe-diskon.netlify.app/
 
-📌 Catatan Reviewer
+## 📌 Catatan Reviewer
 
 Project ini fokus pada frontend
 
@@ -141,6 +148,6 @@ Kode dibuat clean, readable, dan scalable
 
 State & UX menjadi prioritas utama
 
-👨‍💻 Author
+## 👨‍💻 Author
 
 Lokius William Tanikwele
