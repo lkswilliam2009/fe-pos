@@ -129,7 +129,7 @@ Output akan berada di folder:
 
 dist/
 
-dapat diakses di https://zippy-dasik-02eacf.netlify.app/
+dapat diakses di https://fe-diskon.netlify.app/
 
 📌 Catatan Reviewer
 
