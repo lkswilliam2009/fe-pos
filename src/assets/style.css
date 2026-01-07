@@ -118,6 +118,12 @@ body {
   color: #41b03c;
 }
 
+.table-wrapper {
+  border-radius: 12px;
+  overflow: hidden; /* kunci rounded */
+  border: 1px solid #e5e7eb;
+}
+
 .table-card {
   background: white;
   border-radius: 12px;
@@ -152,6 +158,10 @@ body {
   padding: 10px;
   border: 1px solid #e2e2e2;
   font-size: 14px;
+}
+
+.table tbody tr:hover {
+  background: #f3f4f6;
 }
 
 .btn-link {
@@ -289,3 +299,46 @@ button:disabled {
   margin-top: 8px;
 }
 
+.table-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.search-input {
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  width: 200px;
+}
+
+.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sortable span {
+  margin-left: 4px;
+  font-size: 12px;
+}
+
+/* Modal footer */
+.modal-footer {
+  overflow: hidden; /* untuk clear float */
+  margin-top: 10px;
+}
+
+/* Tombol kiri */
+.modal-footer .btn-danger {
+  float: left;
+}
+
+/* Tombol kanan */
+.modal-footer .right-buttons {
+  float: right;
+  gap: 28px;
+}
+
+.modal-footer .right-buttons .btn {
+  margin-left: 0.5rem; /* jarak antar tombol kanan */
+}

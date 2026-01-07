@@ -3,7 +3,7 @@
     <div class="container">
 
       <!-- Header -->
-      <h1 class="title">Daftar Diskon</h1>
+      <h1 class="title">Outlet</h1>
 
       <!-- Outlet -->
       <div class="outlet">
@@ -53,66 +53,84 @@
       </div>
       <!-- TABLE STATE -->
       <div v-else class="table-card">
-
         <div class="table-header">
-          <h2>
-            Daftar Diskon<br>
-            <span class="count">Total jumlah diskon : {{ items.length }}</span>
-          </h2>
-          <button class="btn-green" @click="showModal = true">
-            + Tambah diskon
-          </button>
+          <div>
+            <h2>
+              Daftar Diskon<br>
+              <span class="count">Total jumlah diskon : {{ filteredItems.length }}</span>
+            </h2>
+          </div>
+
+          <div class="table-actions">
+            <input
+              class="search-input"
+              v-model="keyword"
+              placeholder="Cari nama atau nilai diskon..."
+            />
+
+            <button class="btn-green" @click="showModal = true">
+              + Tambah diskon
+            </button>
+          </div>
         </div>
 
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Nama Diskon</th>
-              <th>Nilai Diskon</th>
-              <th>&nbsp;</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="d in items" :key="d._id">
-              <td>{{ d.nama }}</td>
-             <td>
-                <span v-if="d.tipe === 'persen'">
-                  {{ formatDiskon(d.nilai, d.tipe) }}
-                </span>
-                <span v-else>
-                  Rp {{ formatDiskon(d.nilai, d.tipe) }}
-                </span>
-              </td>
-             <td class="action-cell">
-                <button class="icon-btn" title="Edit" @click="openEdit(d)">
-                  <!-- Pencil Icon -->
-                  <svg viewBox="0 0 24 24" width="16" height="16">
-                    <path
-                      fill="currentColor"
-                      d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                    />
-                  </svg>
-                </button>
+        <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <!-- Header kosong untuk kolom checkbox -->
+                <th>&nbsp;</th>
+                <th class="sortable" @click="sortBy('nama')">
+                  Nama Diskon
+                  <span v-if="sortKey === 'nama'">
+                    {{ sortOrder === 'asc' ? '▲' : '▼' }}
+                  </span>
+                </th>
 
-                <button class="icon-btn danger" title="Hapus" @click="openDelete(d)">
-                  <!-- Trash Icon -->
-                  <svg viewBox="0 0 24 24" width="16" height="16">
-                    <path
-                      fill="currentColor"
-                      d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
-                    />
-                  </svg>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                <th class="sortable" @click="sortBy('nilai')">
+                  Nilai Diskon
+                  <span v-if="sortKey === 'nilai'">
+                    {{ sortOrder === 'asc' ? '▲' : '▼' }}
+                  </span>
+                </th>
 
+                <th>&nbsp;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="d in filteredItems" :key="d._id">
+                <td>
+                  <input type="checkbox" v-model="d.selected" />
+                </td>
+                <td>{{ d.nama }}</td>
+                <td>
+                  <span v-if="d.tipe === 'persen'">
+                    {{ formatDiskon(d.nilai, d.tipe) }}
+                  </span>
+                  <span v-else>
+                    Rp {{ formatDiskon(d.nilai, d.tipe) }}
+                  </span>
+                </td>
+                <td class="action-cell">
+                  <button class="icon-btn" title="Edit" @click="openEdit(d)">
+                    <!-- Pencil Icon -->
+                    <svg viewBox="0 0 24 24" width="16" height="16">
+                      <path
+                        fill="currentColor"
+                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                      />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>  
       </div>
 
 
       <!-- MODAL -->
-      <div v-if="showModal" class="modal-backdrop" @click.self="showModal = false">
+      <div v-if="showModal" class="modal-backdrop">
         <div class="modal">
           <div class="modal-header">
             <h3>{{ isEdit ? "Edit Diskon" : "Tambah Diskon" }}</h3>
@@ -134,14 +152,34 @@
             </button>
           </div>
 
-          <button class="btn-green full" :disabled="loading" @click="simpan">
-            {{ loading ? "Menyimpan..." : (isEdit ? "Simpan" : "Simpan") }}
-          </button>
+          <div class="modal-footer">
+            <button
+              v-if="isEdit"
+              class="btn-danger"
+              :disabled="loading"
+              @click="openDeleteFromModal"
+            >
+              {{ loading ? "Menghapus..." : "Hapus" }}
+            </button>
+            <div class="right-buttons">
+              <button class="btn-outline" @click="showModal = false; resetForm()">
+                Batal
+              </button>
+
+              <button
+                class="btn-green"
+                :disabled="loading"
+                @click="simpan"
+              >
+                {{ loading ? "Menyimpan..." : (isEdit ? "Simpan" : "Simpan") }}
+              </button>
+            </div>  
+          </div>
         </div>
       </div>
 
       <!-- MODAL KONFIRMASI DELETE -->
-      <div v-if="showDelete" class="modal-backdrop" @click.self="showDelete = false">
+      <div v-if="showDelete" class="modal-backdrop">
         <div class="modal small">
           <h3>Hapus Diskon?</h3>
           <p>
@@ -174,7 +212,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from "vue"
+import { ref, watch, onMounted, onUnmounted, computed } from "vue"
 import axios from "axios"
 
 /* state */
@@ -198,15 +236,33 @@ const isCustomOutlet = ref(false)
 
 const hasLoaded = ref(false)
 
+const sortKey = ref("nama")
+const sortOrder = ref("asc")
+
 const selectedOutlet = ref("kopi-anak-bangsa")
 
 const handleOutletChange = () => {
   if (selectedOutlet.value === "kopi-anak-bangsa") {
-    apiUrl.value = "https://crudcrud.com/api/b05d2038067b44038ea7858e00585d82/discounts"
+    apiUrl.value = "https://crudcrud.com/api/2fb71609ba534be6bea1428adf272306/discount"
   }
 
   if (selectedOutlet.value === "custom") {
     apiUrl.value = ""
+  }
+}
+
+const openDeleteFromModal = () => {
+  showModal.value = false
+  showDelete.value = true
+}
+
+const sortBy = (key) => {
+  if (sortKey.value === key) {
+    // toggle asc / desc
+    sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc"
+  } else {
+    sortKey.value = key
+    sortOrder.value = "asc"
   }
 }
 
@@ -294,14 +350,13 @@ const simpan = async () => {
 }
 
 /* edit */
-const openEdit = (item) => {
+const openEdit = (d) => {
   isEdit.value = true
-  editId.value = item._id
-
-  nama.value = item.nama
-  nilai.value = item.nilai
-  tipe.value = item.tipe
-
+  editId.value = d._id
+  selected.value = d 
+  nama.value = d.nama
+  nilai.value = d.nilai
+  tipe.value = d.tipe
   showModal.value = true
 }
 
@@ -321,22 +376,22 @@ const openDelete = (item) => {
 
 /* confirm delete */
 const confirmDelete = async () => {
-  if (!selected.value || loading.value) return
+  if (!selected.value || loading.value) {
+    console.warn("Delete blocked:", selected.value, loading.value)
+    return
+  }
+
   loading.value = true
 
   try {
     await axios.delete(`${apiUrl.value}/${selected.value._id}`)
     showToast("Diskon berhasil dihapus")
     showDelete.value = false
-    selected.value = null
+    resetForm()
     loadData()
-  } catch (e){
-    if (!e.response) {
-      // CORS / Network / Blocked
-      showToast("Tidak dapat terhubung ke server")
-    } else {
-      showToast("Gagal menghapus diskon", "error")
-    }
+  } catch (e) {
+    console.error(e)
+    showToast("Gagal menghapus diskon", "error")
   } finally {
     loading.value = false
   }
@@ -349,6 +404,40 @@ const resetForm = () => {
   isEdit.value = false
   editId.value = null
 }
+
+const keyword = ref("")
+
+const filteredItems = computed(() => {
+  let data = [...items.value]
+
+  // FILTER
+  if (keyword.value) {
+    const q = keyword.value.toLowerCase()
+    data = data.filter(d =>
+      d.nama.toLowerCase().includes(q) ||
+      String(d.nilai).includes(q)
+    )
+  }
+
+  // SORT
+  if (sortKey.value) {
+    data.sort((a, b) => {
+      let valA = a[sortKey.value]
+      let valB = b[sortKey.value]
+
+      if (sortKey.value === "nama") {
+        valA = valA.toLowerCase()
+        valB = valB.toLowerCase()
+      }
+
+      if (valA < valB) return sortOrder.value === "asc" ? -1 : 1
+      if (valA > valB) return sortOrder.value === "asc" ? 1 : -1
+      return 0
+    })
+  }
+
+  return data
+})
 
 const toast = ref({
   show: false,
