@@ -62,14 +62,39 @@
           </div>
 
           <div class="table-actions">
-            <input
-              class="search-input"
-              v-model="keyword"
-              placeholder="Cari nama atau nilai diskon..."
-            />
+            <div class="search-wrapper">
+              <input
+                class="search-input"
+                v-model="keyword"
+                placeholder="Cari diskon..."
+              />
 
+              <button
+                v-if="keyword"
+                class="clear-btn"
+                type="button"
+                @click="clearSearch"
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
+            </div>
+            <button
+              v-if="selectedIds.length > 0"
+              class="btn-outline"
+              @click="selectedIds = []"
+            >
+              Batalkan
+            </button>
+            <button
+              v-if="selectedIds.length > 0"
+              class="btn-danger"
+              @click="openBulkDelete"
+            >
+              Hapus
+            </button>
             <button class="btn-green" @click="showModal = true">
-              + Tambah diskon
+              Tambah
             </button>
           </div>
         </div>
@@ -78,8 +103,13 @@
           <table class="table">
             <thead>
               <tr>
-                <!-- Header kosong untuk kolom checkbox -->
-                <th>&nbsp;</th>
+                <th class="check-cell">
+                  <input
+                    type="checkbox"
+                    :checked="isAllChecked"
+                    @change="toggleAll"
+                  />
+                </th>
                 <th class="sortable" @click="sortBy('nama')">
                   Nama Diskon
                   <span v-if="sortKey === 'nama'">
@@ -94,13 +124,17 @@
                   </span>
                 </th>
 
-                <th>&nbsp;</th>
+                <th class="aksi">&nbsp;</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="d in filteredItems" :key="d._id">
-                <td>
-                  <input type="checkbox" v-model="d.selected" />
+                <td class="check-cell">
+                  <input
+                    type="checkbox"
+                    :value="d._id"
+                    v-model="selectedIds"
+                  />
                 </td>
                 <td>{{ d.nama }}</td>
                 <td>
@@ -133,23 +167,49 @@
       <div v-if="showModal" class="modal-backdrop">
         <div class="modal">
           <div class="modal-header">
-            <h3>{{ isEdit ? "Edit Diskon" : "Tambah Diskon" }}</h3>
+            <h3>{{ isEdit ? "Ubah Diskon" : "Tambah Diskon" }}</h3>
             <button class="close" @click="showModal=false; resetForm()">×</button>
           </div>
 
-          <label>Nama Diskon</label>
-          <input
-            class="input"
-            v-model="nama"
-            placeholder="Misal: Diskon opening, diskon akhir tahun"
-          />
+          <div class="form-group">
+            <label class="form-label">Nama Diskon</label>
+            <input
+              v-model="nama"
+              class="form-input"
+              placeholder="Misal: Diskon opening, diskon akhir tahun"
+              @input="errors.nama = ''"
+            />
+            <small v-if="errors.nama" class="error-text">
+              {{ errors.nama }}
+            </small>
+          </div>
 
-          <label>Diskon</label>
-          <div class="discount-row">
-            <input class="input" type="number" v-model.number="nilai" />
-            <button class="toggle-single" @click="toggleTipe">
-              {{ tipe === 'persen' ? '%' : 'Rp' }}
-            </button>
+
+          <div class="form-group">
+            <label class="form-label">Diskon</label>
+            <div class="discount-row input-prefix-wrapper">
+              <span v-if="tipe === 'rp'" class="input-prefix">Rp</span>
+              <input
+                class="form-input"
+                :class="{ 'has-prefix': tipe === 'rp' }"
+                type="number"
+                v-model.number="nilai"
+                placeholder="0"
+                @input="errors.nilai = ''"
+              />
+
+              <button
+                type="button"
+                class="toggle-single"
+                @click="toggleTipe"
+              >
+                {{ tipe === 'persen' ? '%' : 'Rp' }}
+              </button>
+            </div>
+
+            <small v-if="errors.nilai" class="error-text">
+              {{ errors.nilai }}
+            </small>
           </div>
 
           <div class="modal-footer">
@@ -162,7 +222,7 @@
               {{ loading ? "Menghapus..." : "Hapus" }}
             </button>
             <div class="right-buttons">
-              <button class="btn-outline" @click="showModal = false; resetForm()">
+              <button class="btn-outline" @click="closeModal">
                 Batal
               </button>
 
@@ -276,6 +336,33 @@ const formatDiskon = (nilai, tipe) => {
 
 const toggleTipe = () => {
   tipe.value = tipe.value === "persen" ? "rp" : "persen"
+  resetErrors()
+}
+
+const closeModal = () => {
+  resetErrors()
+  resetForm()
+  showModal.value = false
+}
+
+const resetErrors = () => {
+  errors.value = {
+    nama: "",
+    nilai: ""
+  }
+}
+
+const clearSearch = () => {
+  keyword.value = ""
+}
+
+const isDuplicateName = () => {
+  return items.value.some(d => {
+    // Abaikan data yang sedang diedit
+    if (isEdit.value && d._id === editId.value) return false
+
+    return d.nama.trim().toLowerCase() === nama.value.trim().toLowerCase()
+  })
 }
 
 /* load data */
@@ -304,19 +391,53 @@ const loadData = async () => {
   }
 }
 
+const errors = ref({
+  nama: "",
+  nilai: ""
+})
+
+const validateForm = () => {
+  let valid = true
+
+  if (!nama.value.trim()) {
+    errors.value.nama = "Nama diskon wajib diisi"
+    valid = false
+  }
+
+  if (nilai.value === null || nilai.value === "" || nilai.value <= 0) {
+    errors.value.nilai = "Nilai diskon wajib diisi"
+    valid = false
+  }
+
+  if (tipe.value === "persen" && nilai.value > 100) {
+    errors.value.nilai = "Diskon persen maksimal 100%"
+    valid = false
+  }
+
+  if (valid && isDuplicateName()) {
+    errors.value.nama = "Nama diskon sudah digunakan"
+    valid = false
+  }
+
+  return valid
+}
+
 /* simpan */
 const simpan = async () => {
   if (loading.value) return
+
+  if (!validateForm()) return
+
   loading.value = true
 
   try {
     if (isEdit.value) {
-      // 1. HAPUS DATA LAMA
+      // 1. HAPUS DATA LAMA (karena crudcrud tidak support PUT/PATCH)
       await axios.delete(`${apiUrl.value}/${editId.value}`)
 
       // 2. BUAT DATA BARU
       await axios.post(apiUrl.value, {
-        nama: nama.value,
+        nama: nama.value.trim(),
         nilai: Number(nilai.value),
         tipe: tipe.value
       })
@@ -325,7 +446,7 @@ const simpan = async () => {
     } else {
       // CREATE
       await axios.post(apiUrl.value, {
-        nama: nama.value,
+        nama: nama.value.trim(),
         nilai: Number(nilai.value),
         tipe: tipe.value
       })
@@ -338,8 +459,9 @@ const simpan = async () => {
     loadData()
   } catch (e) {
     console.error(e)
+
     if (!e.response) {
-      // CORS / Network / Blocked
+      // Network / CORS / Blocked
       showToast("Tidak dapat terhubung ke server")
     } else {
       showToast("Gagal menyimpan diskon", "error")
@@ -374,20 +496,23 @@ const openDelete = (item) => {
   showDelete.value = true
 }
 
+const openBulkDelete = () => {
+  showDelete.value = true
+}
+
 /* confirm delete */
 const confirmDelete = async () => {
-  if (!selected.value || loading.value) {
-    console.warn("Delete blocked:", selected.value, loading.value)
-    return
-  }
-
+  if (!selectedIds.value.length || loading.value) return
   loading.value = true
 
   try {
-    await axios.delete(`${apiUrl.value}/${selected.value._id}`)
-    showToast("Diskon berhasil dihapus")
+    for (const id of selectedIds.value) {
+      await axios.delete(`${apiUrl.value}/${id}`)
+    }
+
+    showToast(`${selectedIds.value.length} diskon berhasil dihapus`)
+    selectedIds.value = []
     showDelete.value = false
-    resetForm()
     loadData()
   } catch (e) {
     console.error(e)
@@ -399,7 +524,7 @@ const confirmDelete = async () => {
 
 const resetForm = () => {
   nama.value = ""
-  nilai.value = 0
+  nilai.value = null
   tipe.value = "persen"
   isEdit.value = false
   editId.value = null
@@ -471,6 +596,23 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("keydown", handleEsc)
 })
+
+const selectedIds = ref([])
+
+// cek apakah semua terpilih
+const isAllChecked = computed(() =>
+  filteredItems.value.length > 0 &&
+  selectedIds.value.length === filteredItems.value.length
+)
+
+// toggle checkbox header
+const toggleAll = () => {
+  if (isAllChecked.value) {
+    selectedIds.value = []
+  } else {
+    selectedIds.value = filteredItems.value.map(d => d._id)
+  }
+}
 
 /* WATCH DI SINI */
 watch(apiUrl, loadData)

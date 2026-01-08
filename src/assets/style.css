@@ -150,7 +150,7 @@ body {
 
 .table th {
   background: #f5f6f8;
-  font-weight: 500;
+  font-weight: bold;
 }
 
 .table th,
@@ -243,11 +243,11 @@ button:disabled {
   font-weight: 600;
   cursor: pointer;
   min-width: 48px;
+  height: 45px;
 }
 
 .action-cell {
-  display: flex;
-  gap: 12px;
+  text-align: center;
 }
 
 .icon-btn {
@@ -315,6 +315,7 @@ button:disabled {
 .sortable {
   cursor: pointer;
   user-select: none;
+  text-align: left;
 }
 
 .sortable span {
@@ -341,4 +342,123 @@ button:disabled {
 
 .modal-footer .right-buttons .btn {
   margin-left: 0.5rem; /* jarak antar tombol kanan */
+}
+
+.aksi {
+  width: 40px;
+  text-align: center;
+}
+
+.check-cell {
+  width: 40px;
+  text-align: center;
+}
+
+.check-cell input {
+  width: 16px;
+  height: 16px;
+  accent-color: #22c55e;
+}
+
+.btn-danger,
+.btn-outline {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.error-text {
+  color: #ef4444;
+  font-size: 10px;
+  margin-top: -6px;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.input.error {
+  border-color: #ef4444;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 13px;
+  color: #6b7280; /* abu-abu */
+  font-weight: 500;
+}
+
+.form-input {
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: #fff;
+  margin-bottom: 10px;
+}
+
+.form-input::placeholder {
+  color: #9ca3af;
+}
+
+.form-input:focus {
+  border-color: #22c55e; /* hijau */
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.15);
+}
+
+.input-prefix-wrapper {
+  position: relative;
+}
+
+/* PREFIX RP */
+.input-prefix {
+  position: absolute;
+  left: 14px;
+  top: 40%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #6b7280;
+  pointer-events: none;
+}
+
+/* TAMBAH RUANG SAAT RP AKTIF */
+.form-input.has-prefix {
+  padding-left: 42px; /* cukup untuk Rp */
+}
+
+.search-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.search-input {
+  width: 75%;
+  height: 40px;
+  padding: 0 36px 0 14px; /* ruang untuk X */
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+/* CLEAR BUTTON */
+.clear-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.clear-btn:hover {
+  color: #374151;
 }
